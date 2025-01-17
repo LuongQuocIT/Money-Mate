@@ -7,8 +7,11 @@ import Transactions from "./pages/transactions";
 import useStore from "./store";
 import Dashboard from "./pages/dashboard";
 import Settings from "./pages/settings";
+import { setAuthToken } from "./libs/apiCall";
+import { Toaster } from "react-hot-toast";
 const RootLayout = () => {
   const user = useStore((state) => state);
+  setAuthToken(user?.token || "");
   console.log(user);
   return !user ? (
     <Navigate to="/sign-in" replace={true} />
@@ -37,6 +40,7 @@ function App() {
             <Route path="/sign-up" element={<SignUp />} />
           </Routes>
         </div>
+        <Toaster richColors position="top-center" />
       </main>
     </>
   );
