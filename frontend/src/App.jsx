@@ -9,6 +9,7 @@ import Dashboard from "./pages/dashboard";
 import Settings from "./pages/settings";
 import { setAuthToken } from "./libs/apiCall";
 import { Toaster } from "react-hot-toast";
+import UserMenu from "./components/navbar";
 const RootLayout = () => {
   const user = useStore((state) => state);
   setAuthToken(user?.token || "");
@@ -17,6 +18,7 @@ const RootLayout = () => {
     <Navigate to="/sign-in" replace={true} />
   ) : (
     <>
+      <UserMenu />
       <div>
         <Outlet />
       </div>
@@ -30,7 +32,7 @@ function App() {
         <div className="w-full">
           <Routes>
             <Route element={<RootLayout />}>
-              <Route path="/" element={<Navigate to="/overview" />} />
+              <Route path="/" element={<Navigate to="/sign-up" />} />
               <Route path="/overview" element={<Dashboard />} />
               <Route path="/transactions" element={<Transactions />} />
               <Route path="/settings" element={<Settings />} />

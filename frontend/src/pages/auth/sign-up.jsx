@@ -21,15 +21,16 @@ import api from "../../libs/apiCall";
 
 const RegisterSchema = z.object({
   email: z
-    .string({ required_error: "Email is required" })
-    .email({ message: "Invalid email address" }),
+    .string({ required_error: "Email là bắt buộc" })
+    .email({ message: "Địa chỉ email không hợp lệ" }),
   firstName: z
-    .string({ required_error: "Name is required" })
-    .min(3, "Name is required"),
+    .string({ required_error: "Tên là bắt buộc" })
+    .min(3, "Tên phải có ít nhất 3 ký tự"),
   password: z
-    .string({ required_error: "Password is required" })
-    .min(8, "Password must be at least 8 characters"),
+    .string({ required_error: "Mật khẩu là bắt buộc" })
+    .min(8, "Mật khẩu phải có ít nhất 8 ký tự"),
 });
+
 const SignUp = () => {
   const { user, setCredentials } = useStore((state) => state);
   const {
@@ -38,17 +39,20 @@ const SignUp = () => {
     formState: { errors },
   } = useForm({ resolver: zodResolver(RegisterSchema) });
   const navigate = useNavigate();
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     user && navigate("/");
   }, [user]);
+
   const onSubmit = async (data) => {
     try {
       setLoading(true);
-      const { data: res } = await api.post("/auth/sign-up", data);
+      const response = await api.post("/auth/sign-up", data);
+      const res = response.data;
       if (res?.user) {
         toast.success(res?.message);
-        const userInfo = { ...res?.user, token: res.token };
+        const userInfo = { ...res.user, token: res.token };
         localStorage.setItem("user", JSON.stringify(userInfo));
         setCredentials(userInfo);
         setTimeout(() => {
@@ -62,16 +66,17 @@ const SignUp = () => {
       setLoading(false);
     }
   };
+
   return (
     <div className="flex items-center justify-center w-full min-h-screen py-10">
-      <Card className=" w-[400px] bg-white dark:bg-black/20 shadow-md overflow-hidden ">
-        <div className="p-6 md:-8">
+      <Card className="w-[400px] bg-white dark:bg-black/20 shadow-md overflow-hidden">
+        <div className="p-6 md:p-8">
           <CardHeader className="py-0">
             <CardTitle className="mb-8 text-center dark:text-center">
               Tạo tài khoản
             </CardTitle>
           </CardHeader>
-          <CardContent className="P-0">
+          <CardContent className="p-0">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
               <div className="mb-8 space-y-6">
                 <SocialAuth isLoading={loading} setLoading={setLoading} />
@@ -80,8 +85,6 @@ const SignUp = () => {
                   disabled={loading}
                   id="firstName"
                   label="Tên người dùng"
-                  name="firstName"
-                  register={register}
                   type="text"
                   placeholder="Nhập tên của bạn"
                   error={errors?.firstName?.message}
@@ -92,8 +95,6 @@ const SignUp = () => {
                   disabled={loading}
                   id="email"
                   label="Email"
-                  name="email"
-                  register={register}
                   type="text"
                   placeholder="Nhập email"
                   error={errors?.email?.message}
@@ -104,8 +105,6 @@ const SignUp = () => {
                   disabled={loading}
                   id="password"
                   label="Mật khẩu"
-                  name="password"
-                  register={register}
                   type="password"
                   placeholder="Nhập mật khẩu"
                   error={errors?.password?.message}
